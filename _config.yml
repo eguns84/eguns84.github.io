@@ -20,9 +20,9 @@ locale: en-US
 title: "2carrot's Blog"
 description: "개발을 하면서 여러가지를 기록하는 공간"
 baseurl: # the subpath of your site, e.g. "/blog"
-url: https://2carrot84.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+url: https://eguns84.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 logo: /images/happy-carrot.gif # path of site logo, e.g. "/images/logo.png"
-repository: 2carrot84/2carrot84.github.io # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
+repository: eguns84/eguns84.github.io # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 date_format: "%B %-d, %Y"
 future: true
 read_time: true # reading time estimates, e.g. true
@@ -98,13 +98,13 @@ defaults:
 
 # Site Author
 author:
-  name: 2carrot84
+  name: 2carrot
   picture: /images/avatar.jpeg
   email: 2carrot84@gmail.com
   twitter:
   links:
     - title: GitHub
-      url: https://github.com/2carrot84
+      url: https://github.com/eguns84
       icon: fab fa-github-square
 
 # Footer Links
@@ -113,5 +113,5 @@ footer_links:
     url: atom.xml
     icon: fas fa-rss-square
   - title: GitHub
-    url: https://github.com/2carrot84
+    url: https://github.com/eguns84
     icon: fab fa-github-square
