@@ -8,6 +8,7 @@ tags:
   - jpa
   - querydsl
   - oneToOne
+  - MultipleBagFetchException
   - fetchJoin
   - pagination
 ---
@@ -82,7 +83,7 @@ Content 테이블이 업무에 사용되는 메인 테이블이기에 조회할 
 @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 @JoinColumn(name = "contentId")
 @Builder.Default
-private Set<ContentTree> contentTree = Collections.emptySet();  // TODO: Set 으로 한 이유 찾아 추가 기입
+private Set<ContentTree> contentTree = Collections.emptySet();  // Set 으로 한 이유는 아래 내용 참조!
 
 //-- 기존 코드
 
@@ -94,6 +95,26 @@ public ContentTree getContentTree() {
 ```
 
 위와 같이 수정 후 기존 대비 45% 가량 호출 건수가 줄어드는 것을 확인하였습니다.
+
+### 1-1. OneToOne -> OneToMany 변경 후 MultipleBagFetchException 발생
+
+위 대응 코드 `private Set<ContentTree> contentTree = Collections.emptySet();` 를 보면, 왜 `List`가 아니고 굳이 `Set`을 사용했는지 궁금한 분들이 계실 듯합니다.
+
+저도 사실 처음에는 `List<ContentTree> contentTree`로 구현했지만, 테스트 과정 중 아래와 같은 에러를 만났습니다.
+
+```shell
+org.hibernate.loader.MultipleBagFetchException: cannot simultaneously fetch multiple bags:
+```
+
+위에 설명한 대로 메인 테이블이다 보니 다양한 `Collection` 멤버 변수가 존재했고, QueryDSL을 사용해 fetch join으로 여러 테이블을 참조하고 있는 상황이었습니다.
+
+그런 상황에서 위와 같이 `Content -> ContentTree` 의 관게가 `OneToOne`에서 `OneToMany`로 바뀌면서 해당 에러가 발생하게 된 것이었습니다.
+
+원인은 fetch join 시 `ToMany` 관계를 한 번에 조회하게 되는데, Collection join이 2개 이상이 될 경우 너무 많은 값이 메모리에 적재되어 에러가 발생하는 것이었습니다.
+
+검색해 보니 `List -> Set`으로 바꾸는 것으로 해결이 가능했습니다. 에러 원인과 `Set` 변경 시 해결되는 이유에 대한 상세한 설명은 아래 참고 자료를 확인 부탁드립니다.
+
+> 참고 자료 : [[Springboot] JPA fetch join 2개 이상의 Collection Join 해결법](https://kyu-nahc.tistory.com/entry/Spring-boot-JPA-fetch-join-2%EA%B0%9C-%EC%9D%B4%EC%83%81%EC%9D%98-Collection-Join-%ED%95%B4%EA%B2%B0%EB%B2%95)
 
 ### 2. fetch join + pagination(limit) Warn 로그 발생
 
